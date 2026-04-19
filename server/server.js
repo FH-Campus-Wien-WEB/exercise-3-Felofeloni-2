@@ -14,7 +14,16 @@ app.use(express.static(path.join(__dirname, 'files')));
 
 // Configure a 'get' endpoint for all movies
 app.get('/movies', function (req, res) {
-  res.json(Object.values(movieModel))
+  let movies = Object.values(movieModel);
+  const genre = req.query.genre;
+
+  if (genre) {
+    movies = movies.filter(movie =>
+      movie.Genres.includes(genre)
+    );
+  }
+
+  res.json(movies);
 })
 
 // Configure a 'get' endpoint for a specific movie
@@ -35,6 +44,17 @@ app.put('/movies/:imdbID', function (req, res) {
     putMovie(req.body)
     res.sendStatus(201)
   }
+})
+
+// Configure a 'get' endpoint for a all genres
+app.get('/genres', function (req, res) {
+  const genres = new Set();
+  for(const movie of Object.values(movieModel)){
+    for (const genre of movie.Genres) {
+      genres.add(genre);
+    }
+  }
+  res.json(Array.from(genres).sort());
 })
 
 function putMovie(movie){

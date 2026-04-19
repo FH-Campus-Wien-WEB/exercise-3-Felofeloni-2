@@ -57,23 +57,73 @@ function generateTagsElement(list){
   return container;
 }
 
+function loadGenreList(genres, element){
+
+  const allGenresElement = new ElementBuilder("li")
+  .append(new ElementBuilder("button").text("All").listener("click", () => {
+                    loadMovies("")
+  }))
+  allGenresElement.appendTo(element)
+
+  for(const genre of genres){
+    const genreElement = new ElementBuilder("li")
+      .append(new ElementBuilder("button").text(genre).listener("click", () => {
+                    loadMovies(genre)
+      }))
+    genreElement.appendTo(element)
+  }
+
+}
+
+function loadMovies(genre) {
+  const xhr = new XMLHttpRequest();
+  xhr.onload = function () {
+    const mainElement = document.querySelector("main");
+
+    while (mainElement.childElementCount > 0) {
+      mainElement.firstChild.remove()
+    }
+    if (xhr.status === 200) {
+      const movies = JSON.parse(xhr.responseText)
+      for (const movie of movies) {
+        appendMovie(movie, mainElement)
+      }
+    } else {
+      mainElement.append(`Daten konnten nicht geladen werden, Status ${xhr.status} - ${xhr.statusText}`);
+    }
+  }
+
+  const url  = new URL("/movies", location.href)
+
+  if (genre) {
+    url.searchParams.set("genre", genre);
+  }
+
+  xhr.open("GET", url)
+  xhr.send()
+}
+
 function editMovie(id){
   location.href = 'edit.html?imdbID=' + id
 }
 
 window.onload = function () {
-    const xhr = new XMLHttpRequest()
-    xhr.onload = function () {
-        const bodyElement = document.querySelector("body")
-        if (xhr.status == 200) {
-            const movies = JSON.parse(xhr.responseText)
-            for(const movie of movies){
-                appendMovie(movie, bodyElement)
-            }
-        } else {
-            bodyElement.append("Daten konnten nicht geladen werden, Status " + xhr.status + " - " + xhr.statusText)
-        }
+  const xhr = new XMLHttpRequest();
+  xhr.onload = function () {
+    const listElement = document.querySelector("nav>ul");
+
+    if (xhr.status === 200) {
+      const genres = JSON.parse(xhr.responseText);
+      loadGenreList(genres, listElement)
+
+      const firstButton = document.querySelector("nav button");
+      if (firstButton) {
+        firstButton.click();
+      }
+    } else {
+      document.querySelector("body").append(`Daten konnten nicht geladen werden, Status ${xhr.status} - ${xhr.statusText}`);
     }
-    xhr.open("GET", "/movies")
-    xhr.send()
-}
+  };
+  xhr.open("GET", "/genres");
+  xhr.send();
+};
