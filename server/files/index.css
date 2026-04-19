@@ -1,32 +1,56 @@
 @import url(base.css);
 
-h1 {
-  font-size: 200%;
-  margin: 8px 0px;
-}
-
-/* Constrain the page to the viewport */
-html, body {
-  height: 100vh;
-}
-
-/* Center the nav's header and list */
-nav {
+article{
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin: 10px;
+  background-color: rgb(231, 231, 231);
+  max-height: 24vw;
 }
 
-/* navigation buttons have full width */
-nav button {
-  width: 100%;
+article > div{
+  padding: 0 10px 0 20px;
+  max-width: 100%;
+  flex-grow: 1;
+  overflow: auto;
 }
 
-/* Remove unnecessary space and bullets from the lists */
-ul {
-  padding: 0px;
-  margin: 16px;
-  list-style-type: none;
+.article-header{
+  margin: 10px 0;
+}
+
+.article-header *{
+  margin: 2px;
+}
+
+.title-container :first-child {
+  flex-grow: 1;
+}
+
+.title-container {
+  display: flex;
+  margin: 0;
+}
+
+article > div *{
+  font-size: 1rem;
+}
+
+article div h2{
+  font-size: 1.5rem;
+}
+
+img {
+  max-height: 24vw;
+  border-right: 5px solid red;
+}
+
+.genre-tag{
+  margin-right: 5px;
+  background-color: red;
+  padding: 8px;
+  color: white;
+  border-radius: 100px;
+  font-size: 0.8rem;
 }
 
 /* Task 2.1. Lay out the childs of the 'body' using Grid Template Areas. */
@@ -46,32 +70,3 @@ ul {
 
 /* Task 3.4. Make the footer's ul a Flexbox container */
 
-
-/* From here on styling from exercise 1 */
-img {
-  border-radius: 12px;
-}
-
-article {
-  background-color: lightgray;
-  border-radius: 16px;
-  padding: 16px;
-  width: 384px;
-  margin: 8px;
-}
-
-a {
-  color: beige;
-}
-
-span {
-  margin-right: 4px;
-}
-
-.genre {
-  padding: 4px 8px;
-  border: solid black 1px;
-  border-radius: 6px;
-  background-color: darkgray;
-  font-weight: bold;
-}

@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const movieModel = require('./movie-model.js');
+const fs = require("fs");
 
 const app = express();
 
@@ -11,47 +12,37 @@ app.use(bodyParser.json());
 // Serve static content in directory 'files'
 app.use(express.static(path.join(__dirname, 'files')));
 
-/* Task 1.2: Add a GET /genres endpoint:
-   This endpoint returns a sorted array of all the genres of the movies
-   that are currently in the movie model.
-*/
-
-/* Task 1.4: Extend the GET /movies endpoint:
-   When a query parameter for a specific genre is given, 
-   return only movies that have the given genre
- */
+// Configure a 'get' endpoint for all movies
 app.get('/movies', function (req, res) {
-  let movies = Object.values(movieModel)
-  res.send(movies);
+  res.json(Object.values(movieModel))
 })
 
 // Configure a 'get' endpoint for a specific movie
 app.get('/movies/:imdbID', function (req, res) {
-  const id = req.params.imdbID
-  const exists = id in movieModel
- 
-  if (exists) {
-    res.send(movieModel[id])
+  if (req.params.imdbID in movieModel) {
+    res.json(movieModel[req.params.imdbID])
   } else {
-    res.sendStatus(404)    
+    res.sendStatus(404)
   }
 })
 
-app.put('/movies/:imdbID', function(req, res) {
-
-  const id = req.params.imdbID
-  const exists = id in movieModel
-
-  movieModel[req.params.imdbID] = req.body;
-  
-  if (!exists) {
-    res.status(201)
-    res.send(req.body)
-  } else {
+// Configure a 'put' endpoint for a specific movie
+app.put('/movies/:imdbID', function (req, res) {
+  if (req.params.imdbID in movieModel) {
+    putMovie(req.body)
     res.sendStatus(200)
+  } else {
+    putMovie(req.body)
+    res.sendStatus(201)
   }
-  
 })
+
+function putMovie(movie){
+  movieModel[movie.imdbID]=movie
+
+  const filePath = path.join(__dirname, "files/json/"+movie.imdbID+".json")
+  fs.writeFileSync(filePath, JSON.stringify(movie, null, 2), "utf-8");
+}
 
 app.listen(3000)
 

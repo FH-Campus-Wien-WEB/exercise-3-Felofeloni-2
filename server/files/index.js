@@ -1,92 +1,128 @@
-import { ElementBuilder, ParentChildBuilder } from "./builders.js";
+function displayMovie(movie) {
+    //Container
+    const container = document.createElement("article")
+    container.id = movie.imdbID
 
-class ParagraphBuilder extends ParentChildBuilder {
-  constructor() {
-    super("p", "span");
-  }
+    //Poster
+    const poster = document.createElement("img")
+    poster.src = movie.Poster
+    container.appendChild(poster)
+
+    //Child-container
+    const childContainer = document.createElement("div")
+    childContainer.classList.add("child-container");
+
+      //Article-header
+      const articleContainer = document.createElement("div")
+      articleContainer.classList.add("article-header");
+
+        //Title-container
+        const titleContainer = document.createElement("div")
+        titleContainer.classList.add("title-container");
+
+            //Title
+            const title = document.createElement("h2")
+            title.textContent = movie.Title
+            titleContainer.appendChild(title)
+
+            //Side-Container
+            const sideContainer = document.createElement("div")
+            sideContainer.classList.add("article-side");
+
+                //Edit Button
+                const edit = document.createElement("button")
+                edit.textContent = "Edit"
+                edit.addEventListener("click", () => {
+                    editMovie(container.id)
+                });
+                sideContainer.appendChild(edit)
+
+            titleContainer.appendChild(sideContainer)
+
+        articleContainer.appendChild(titleContainer)
+
+        // Info (Released, Runtime, Rating)
+        const info = document.createElement("p")
+        info.textContent = `Released: ${movie.Released} | Runtime: ${movie.Runtime} min | IMDb: ${movie.imdbRating} | Metascore: ${movie.Metascore}`
+        articleContainer.appendChild(info)
+
+      childContainer.appendChild(articleContainer)
+
+      // Genres
+      const genres = generateTagsElement(movie.Genres)
+      childContainer.appendChild(genres)
+
+      // Plot
+      const plot = document.createElement("p")
+      plot.textContent = movie.Plot
+      childContainer.appendChild(plot)
+
+      //Directors
+      const directors = generateListElement("Directors", movie.Directors)
+      childContainer.appendChild(directors)
+
+      //Writers
+      const writers = generateListElement("Writers", movie.Writers)
+      childContainer.appendChild(writers)
+      
+      //Actors
+      const actors = generateListElement("Actors", movie.Actors)
+      childContainer.appendChild(actors)
+    
+    container.appendChild(childContainer)
+
+    return container
 }
 
-class ListBuilder extends ParentChildBuilder {
-  constructor() {
-    super("ul", "li");
-  }
-}
+function generateListElement(listTitle, list){
+    const element = document.createElement("p")
 
-function formatRuntime(runtime) {
-  const hours = Math.trunc(runtime / 60);
-  const minutes = runtime % 60;
-  return hours + "h " + minutes + "m";
-}
+    const title = document.createElement("h3");
+    title.textContent = listTitle;
+    element.appendChild(title)
 
-function appendMovie(movie, element) {
-  new ElementBuilder("article").id(movie.imdbID)
-          .append(new ElementBuilder("img").with("src", movie.Poster))
-          .append(new ElementBuilder("h1").text(movie.Title))
-          .append(new ElementBuilder("p")
-              .append(new ElementBuilder("button").text("Edit")
-                    .listener("click", () => location.href = "edit.html?imdbID=" + movie.imdbID)))
-          .append(new ParagraphBuilder().items(
-              "Runtime " + formatRuntime(movie.Runtime),
-              "\u2022",
-              "Released on " +
-                new Date(movie.Released).toLocaleDateString("en-US")))
-          .append(new ParagraphBuilder().childClass("genre").items(movie.Genres))
-          .append(new ElementBuilder("p").text(movie.Plot))
-          .append(new ElementBuilder("h2").pluralizedText("Director", movie.Directors))
-          .append(new ListBuilder().items(movie.Directors))
-          .append(new ElementBuilder("h2").pluralizedText("Writer", movie.Writers))
-          .append(new ListBuilder().items(movie.Writers))
-          .append(new ElementBuilder("h2").pluralizedText("Actor", movie.Actors))
-          .append(new ListBuilder().items(movie.Actors))
-          .appendTo(element);
-}
-
-function loadMovies(genre) {
-  const xhr = new XMLHttpRequest();
-  xhr.onload = function () {
-    const mainElement = document.querySelector("main");
-
-    while (mainElement.childElementCount > 0) {
-      mainElement.firstChild.remove()
+    const unsortedList = document.createElement("ul")
+    for(const item of list){
+        const listItem = document.createElement("li")
+        listItem.textContent = item
+        unsortedList.appendChild(listItem)
     }
 
-    if (xhr.status === 200) {
-      const movies = JSON.parse(xhr.responseText)
-      for (const movie of movies) {
-        appendMovie(movie, mainElement)
-      }
-    } else {
-      mainElement.append(`Daten konnten nicht geladen werden, Status ${xhr.status} - ${xhr.statusText}`);
+    element.appendChild(unsortedList)
+
+    return element
+}
+
+function generateTagsElement(list){
+    const element = document.createElement("div")
+
+    for(const item of list){
+        const span = document.createElement("span")
+        span.textContent = item
+        span.classList.add("genre-tag");
+        element.appendChild(span)
     }
-  }
 
-  const url = new URL("/movies", location.href)
-  /* Task 1.4. Add query parameter to the url if a genre is given */
+    return element
+}
 
-  xhr.open("GET", url)
-  xhr.send()
+function editMovie(id){
+  location.href = 'edit.html?imdbID=' + id
 }
 
 window.onload = function () {
-  const xhr = new XMLHttpRequest();
-  xhr.onload = function () {
-    const listElement = document.querySelector("nav>ul");
-
-    if (xhr.status === 200) {
-      /* Task 1.3. Add the genre buttons to the listElement and 
-         initialize them with a click handler that calls the 
-         loadMovies(...) function above. */
-      const genres = JSON.parse(xhr.responseText);
-
-      /* When a first button exists, we click it to load all movies. */
-      const firstButton = document.querySelector("nav button");
-      if (firstButton) {
-        firstButton.click();
-      }
-    } else {
-      document.querySelector("body").append(`Daten konnten nicht geladen werden, Status ${xhr.status} - ${xhr.statusText}`);
+    const xhr = new XMLHttpRequest()
+    xhr.onload = function () {
+        const bodyElement = document.querySelector("body")
+        if (xhr.status == 200) {
+            const movies = JSON.parse(xhr.responseText)
+            for(const movie of movies){
+                bodyElement.append(displayMovie(movie))
+            }
+        } else {
+            bodyElement.append("Daten konnten nicht geladen werden, Status " + xhr.status + " - " + xhr.statusText)
+        }
     }
-  };
-  xhr.open("GET", "/genres");
-  xhr.send();
-};
+    xhr.open("GET", "/movies")
+    xhr.send()
+}

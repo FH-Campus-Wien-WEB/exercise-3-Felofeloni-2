@@ -1,0 +1,27 @@
+{
+  "imdbID": "tt1130884",
+  "Title": "Shutter Island",
+  "Released": "2010-02-19",
+  "Runtime": 138,
+  "Genres": [
+    "Drama",
+    "Mystery",
+    "Thriller"
+  ],
+  "Directors": [
+    "Martin Scorsese"
+  ],
+  "Writers": [
+    "Laeta Kalogridis",
+    "Dennis Lehane"
+  ],
+  "Actors": [
+    "Leonardo DiCaprio",
+    "Emily Mortimer",
+    "Mark Ruffalo"
+  ],
+  "Plot": "Two US marshals are sent to a mental institution on an inhospitable island in order to investigate the disappearance of a patient.",
+  "Poster": "https://m.media-amazon.com/images/M/MV5BN2FjNWExYzEtY2YzOC00YjNlLTllMTQtNmIwM2Q1YzBhOWM1XkEyXkFqcGc@._V1_SX300.jpg",
+  "Metascore": 63,
+  "imdbRating": 8.2
+}
