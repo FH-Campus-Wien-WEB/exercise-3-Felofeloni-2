@@ -2,8 +2,14 @@
   font-family: Arial, sans-serif;
 }
 
+html{
+  min-height: 100vh;
+  margin: 0px;
+}
+
 body {
   background-color: rgb(255, 255, 255);
+  min-height: 100vh;
   margin: 0px;
 }
 

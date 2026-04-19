@@ -15,6 +15,7 @@ function appendMovie(movie, element) {
   const titleContainer = new ElementBuilder("div").class("title-container")
   titleContainer.appendTo(articleHeader.element)
   new ElementBuilder("h2").text(movie.Title).appendTo(titleContainer.element)
+  new ElementBuilder("p").text(`Released: ${movie.Released} | Runtime: ${movie.Runtime} min | IMDb: ${movie.imdbRating} | Metascore: ${movie.Metascore}`).appendTo(articleHeader.element)
 
   const articleSide = new ElementBuilder("div").class("article-side")
   articleSide.appendTo(titleContainer.element)
@@ -23,8 +24,7 @@ function appendMovie(movie, element) {
                 })
   button.appendTo(articleSide.element)
 
-  movieContent.append(new ElementBuilder("p").text(`Released: ${movie.Released} | Runtime: ${movie.Runtime} min | IMDb: ${movie.imdbRating} | Metascore: ${movie.Metascore}`))  
-      .append(generateTagsElement(movie.Genres))
+  movieContent.append(generateTagsElement(movie.Genres))
       .append(new ElementBuilder("p").text(movie.Plot))
       .append(generateListElement("Directors", movie.Directors))
       .append(generateListElement("Writers", movie.Writers))
